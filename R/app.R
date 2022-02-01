@@ -15,10 +15,12 @@ ui <- semanticPage(
   )
 )
 server <- function(input, output, session) {
-  stocks_picked <- pickStockServer("picker")
+  stocks_picked <- pickStockServer("picker", sp500nms)
 
   observeEvent(stocks_picked(),{
-    print(stocks_picked())
+    output$stock_tabs <- renderUI({
+      tabset(tabs = stocks_picked() %>% map(~ list(menu = .x, content = .x)))
+    })
   })
   
   

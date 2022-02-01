@@ -1,6 +1,6 @@
 pickStockUI <- function(id) {
   tagList(
-    selectizeInput(NS(id, "tickers"), "Select S&P500 Stocks", multiple = TRUE, choices = sp500nms),
+    selectizeInput(NS(id, "tickers"), "Select S&P500 Stocks", multiple = TRUE, choices = ''),
     action_button(NS(id, "reset_rand_counter"), "Reset Picks"),
     br(),
     checkbox_input(NS(id, "show_rand"), "Random Pick", is_marked = FALSE),
@@ -16,8 +16,13 @@ pickStockUI <- function(id) {
   )
 }
 
-pickStockServer <- function(id) {
+pickStockServer <- function(id, choices) {
   moduleServer(id, function(input, output, session) {
+    
+    observe({
+      updateSelectizeInput(inputId = 'tickers', choices = choices)
+    },autoDestroy = TRUE)
+    
     observeEvent(input$show_rand,
       {
         if (input$show_rand) {
@@ -31,7 +36,7 @@ pickStockServer <- function(id) {
 
     observeEvent(input$counter,
       {
-        samp <- sample(sp500nms, input$n_rand_picks)
+        samp <- sample(choices, input$n_rand_picks)
         updateSelectizeInput(session, "tickers", selected = samp)
       },
       ignoreInit = TRUE
