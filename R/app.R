@@ -20,7 +20,7 @@ server <- function(input, output, session) {
 
   observeEvent(stocks_picked(),{
     output$stock_tabs <- renderUI({
-      tabset(tabs = stocks_picked() %>% map(~ list(menu = .x, content = .x)))
+      tabset(tabs = stocks_picked() %>% map(~ list(menu = .x, content = tickerInfoUI(.x))))
     })
   })
   
