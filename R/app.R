@@ -5,6 +5,7 @@ library(shiny.semantic)
 library(shinyWidgets)
 library(shinyjs)
 library(tidyverse)
+library(plotly)
 
 ui <- semanticPage(
   useShinyjs(),
@@ -16,12 +17,16 @@ ui <- semanticPage(
   )
 )
 server <- function(input, output, session) {
-  stocks_picked <- pickStockServer("picker", sp500nms)
+  ticker <- pickStockServer("picker", sp500nms)
 
-  observeEvent(stocks_picked(),{
+  observeEvent(ticker(),{
     output$stock_tabs <- renderUI({
-      tabset(tabs = stocks_picked() %>% map(~ list(menu = .x, content = tickerInfoUI(.x))))
+      tabset(tabs = ticker() %>% map(~ list(menu = .x, content = tickerInfoUI(.x))))
     })
+    
+    for (i in ticker()) {
+      tickerInfoServer(i)
+    }
   })
   
   
