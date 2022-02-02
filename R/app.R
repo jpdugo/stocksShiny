@@ -1,5 +1,6 @@
 stocksInfo <- function(...) {
 library(shiny)
+library(quantmod)
 library(shiny.semantic)
 library(shinyWidgets)
 library(shinyjs)
