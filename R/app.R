@@ -1,11 +1,4 @@
 stocksInfo <- function(...) {
-library(shiny)
-library(quantmod)
-library(shiny.semantic)
-library(shinyWidgets)
-library(shinyjs)
-library(tidyverse)
-library(plotly)
 
 ui <- semanticPage(
   useShinyjs(),
@@ -21,7 +14,8 @@ server <- function(input, output, session) {
 
   observeEvent(ticker(),{
     output$stock_tabs <- renderUI({
-      tabset(tabs = ticker() %>% map(~ list(menu = .x, content = tickerInfoUI(.x))))
+      tabset(tabs = ticker() %>%
+               map(~ list(menu = .x, content = tickerInfoUI(.x))))
     })
     
     for (i in ticker()) {
