@@ -1,15 +1,32 @@
 tickerInfoUI <- function(id) {
   tagList(
-    br(),
-    date_input(NS(id, "date"), "From: ",
-      min = "2001-01-01",
-      max = "2022-12-21",
-      value = "2021-12-31",
-      style = "width: 250px;"
-    ),
-    plotlyOutput(NS(id, "candle")),
-    br(),
-    htmlOutput(NS(id, "finviz_table"))
+    tabset(
+      list(
+        #First tab
+        list(
+          menu = "Overview", content =
+            tagList(
+              br(),
+              date_input(NS(id, "date"), "From: ",
+                min = "2001-01-01",
+                max = "2022-12-21",
+                value = "2018-12-31",
+                style = "width: 250px;"
+              ),
+              selectInput(NS(id, "period"), "Periodicity",
+                          choices = c("days", "weeks", "months", "quarters"),
+                          selected = "days"),
+              selectInput(NS(id, "index_at"), "indexAt",
+                          choices = c("firstof", "lastof", "startof", "endof"),
+                          selected = "endof"),
+              plotlyOutput(NS(id, "candle")),
+              htmlOutput(NS(id, "finviz_table"))
+            )
+        ),
+        #Second Tab
+        list(menu = 'Returns', content = returnsUI(NS(id, 'returns'))) #NS goes here too
+      )
+    )
   )
 }
 
@@ -17,22 +34,34 @@ tickerInfoServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     data <- reactive({
       req(input$date)
+      req(input$index_at)
+      req(input$period)
       getSymbols(id, auto.assign = FALSE, from = input$date)
     })
-    
-    
-    
-    data_df <- reactive(xts_to_tibble(data()))
+
+
+
+    data_period <- reactive({
+      # to avoid unnecessary requests
+      to.period(data(), period = input$period, indexAt = input$index_at, OHLC = FALSE)
+    })
+
+    data_df <- reactive(xts_to_tibble(data_period()))
 
     output$candle <- renderPlotly({
-      data_df() %>% 
+      data_df() %>%
         candlestick_plotly(id)
     })
 
     output$finviz_table <- renderText({
-      x <- kable(get_table_finviz(id), format = "html", caption = 'Finviz Table:') %>%
-        kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 12)
-      gsub("<thead>.*</thead>", "", x)
+      get_table_finviz(id) %>%
+        no_thead_kable()
     })
+    
+    #Returns tab observers
+    
+    stock_returns <- returnsServer('returns', data_period)
+    
+    observe({print(stock_returns())})
   })
 }
