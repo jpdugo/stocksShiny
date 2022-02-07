@@ -24,7 +24,9 @@ tickerInfoUI <- function(id) {
             )
         ),
         #Second Tab
-        list(menu = 'Returns', content = returnsUI(NS(id, 'returns'))) #NS goes here too
+        list(menu = 'Returns', content = returnsUI(NS(id, 'returns'))), 
+        #third Tab
+        list(menu = 'Risk', content = riskmodUI(NS(id, 'risk')))
       )
     )
   )
@@ -58,10 +60,8 @@ tickerInfoServer <- function(id) {
         no_thead_kable()
     })
     
-    #Returns tab observers
+    returnsServer('returns', data_period)
+    riskmodServer('risk', data_period)
     
-    stock_returns <- returnsServer('returns', data_period)
-    
-    observe({print(stock_returns())})
   })
 }

@@ -29,7 +29,7 @@ returnsServer <- function(id, returns_data) {
       ret_df() %>%
         ggplot(aes(x = .data[[adjusted()]])) +
         geom_histogram(binwidth = input$binwidth, alpha = .75, fill = "cornflowerblue", color = "black") +
-        ggtitle(names(ret_df())[[7]]) +
+        ggtitle(str_c('Histogram of ',names(ret_df())[[7]])) +
         xlab("Return")
     })
 
@@ -41,9 +41,8 @@ returnsServer <- function(id, returns_data) {
         ggplot(aes(x = date, y = one_dollar)) +
         geom_line() +
         ylab('Value') +
-        ggtitle('Evolution of $1 Ivestment')
+        ggtitle('Evolution of $1 Investment')
     })
-
-    ret
+    
   })
 }
