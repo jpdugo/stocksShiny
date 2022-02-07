@@ -5,5 +5,5 @@ candlestick_plotly <- function(ochl_df, id) {
     open = as.formula(str_c("~", id, ".Open")), close = as.formula(str_c("~", id, ".Close")),
     high = as.formula(str_c("~", id, ".High")), low = as.formula(str_c("~", id, ".Low"))
   )
-  fig %>% layout(title = id)
+  fig %>% layout(title = id) 
 }

@@ -19,6 +19,7 @@ tickerInfoUI <- function(id) {
               selectInput(NS(id, "index_at"), "indexAt",
                           choices = c("firstof", "lastof", "startof", "endof"),
                           selected = "endof"),
+              br(),
               plotlyOutput(NS(id, "candle")),
               htmlOutput(NS(id, "finviz_table"))
             )

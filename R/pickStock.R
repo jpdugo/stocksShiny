@@ -11,7 +11,6 @@ pickStockUI <- function(id) {
         numeric_input(NS(id, "n_rand_picks"), "N' of Picks", value = 1, min = 1, max = 10)
       )
     ),
-    br(),
     div(id = NS(id, "get_data"), class = "ui teal button", "Get Data")
   )
 }
