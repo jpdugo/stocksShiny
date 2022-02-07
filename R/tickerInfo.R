@@ -20,8 +20,8 @@ tickerInfoUI <- function(id) {
                           choices = c("firstof", "lastof", "startof", "endof"),
                           selected = "endof"),
               br(),
-              plotlyOutput(NS(id, "candle")),
-              htmlOutput(NS(id, "finviz_table"))
+              plotlyOutput(NS(id, "candle")) %>% withSpinner(),
+              htmlOutput(NS(id, "finviz_table")) %>% withSpinner()
             )
         ),
         #Second Tab
