@@ -1,21 +1,15 @@
-library(shiny)
-library(quantmod)
-library(PerformanceAnalytics)
-library(shiny.semantic)
-library(shinyWidgets)
-library(shinyjs)
-library(tidyverse)
-library(plotly)
-library(rvest)
-library(DT)
-library(kableExtra)
-library(dygraphs)
-library(shinycssloaders)
-
-stocksInfo <- function(...) {
+#' Title
+#'
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+run_app <- function() {
 
 ui <- semanticPage(
-  useShinyjs(),
+  shinyjs::useShinyjs(),
   sidebar_layout(
     sidebar_panel(
       pickStockUI("picker")
