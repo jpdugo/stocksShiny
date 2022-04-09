@@ -15,5 +15,5 @@ candlestick_plotly(ochl_df, id)
 A Plotly object
 }
 \description{
-Create a candletick plot using a df with the same structure as the xts object returned by \code{quantmod::getSymbols()}
+Create a candlestick plot using a df with the same structure as the xts object returned by \code{quantmod::getSymbols()}
 }

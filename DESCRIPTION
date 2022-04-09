@@ -26,4 +26,6 @@ Imports:
     DT,
     kableExtra,
     dygraphs,
-    shinycssloaders
+    shinycssloaders,
+    stringr,
+    magrittr
