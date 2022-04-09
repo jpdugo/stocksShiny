@@ -1,3 +1,17 @@
+library(shiny)
+library(quantmod)
+library(PerformanceAnalytics)
+library(shiny.semantic)
+library(shinyWidgets)
+library(shinyjs)
+library(tidyverse)
+library(plotly)
+library(rvest)
+library(DT)
+library(kableExtra)
+library(dygraphs)
+library(shinycssloaders)
+
 stocksInfo <- function(...) {
 
 ui <- semanticPage(

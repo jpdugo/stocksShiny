@@ -2,7 +2,7 @@ get_table_finviz <- function(ticker) {
   link <- str_c("https://finviz.com/quote.ashx?t=", ticker)
   url <- read_html(link)
   tbls <- url %>% html_table()
-  tbls[[7]]
+  tbls[[9]]
   
   # x <-   
   # map_dfc(seq(1, 12, 2), ~ tbl[, c(.x, .x + 1)] %>%
