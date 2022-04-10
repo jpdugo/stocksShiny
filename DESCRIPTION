@@ -28,4 +28,5 @@ Imports:
     dygraphs,
     shinycssloaders,
     stringr,
-    magrittr
+    magrittr,
+    xts

@@ -1,13 +1,22 @@
+#' UI riskmod module
+#'
+#' @param id a name for the id
+#' 
+#' @import shiny
+#' 
+#' @return taglist
+#' @export
+#'
 riskmodUI <- function(id) {
   tagList(
-    flow_layout(
-      card(
+    shiny.semantic::flow_layout(
+      shiny.semantic::card(
         div(
           class = "content",
           div(class = "header", textOutput(NS(id, "sd"))),
         )
       ),
-      card(
+      shiny.semantic::card(
         div(
           class = "content",
           div(class = "header", textOutput(NS(id, "ret"))),
@@ -19,20 +28,27 @@ riskmodUI <- function(id) {
 }
 
 
+#' Server function for riskmod module.
+#'
+#' @param id a name for the id
+#' @param returns_data an xts object containing one column of returns
+#'
+#' @import shiny
+#' @export
 riskmodServer <- function(id, returns_data) {
   stopifnot(is.reactive(returns_data))
   moduleServer(id, function(input, output, session) {
 
     # returns
     ret <- reactive({
-      Ad(returns_data()) %>%
-        Return.calculate(method = "log")
+      quantmod::Ad(returns_data()) %>%
+        PerformanceAnalytics::Return.calculate(method = "log")
     })
 
     # standard deviation
     std <- reactive({
       ret() %>%
-        StdDev()
+        PerformanceAnalytics::StdDev()
     })
 
     output$deviations_plot <- renderPlot({
@@ -41,11 +57,11 @@ riskmodServer <- function(id, returns_data) {
 
 
     output$ret <- renderText({
-      str_c("Average Return: ", round(mean(ret() * 100, na.rm = TRUE), 5), "%")
+      stringr::str_c("Average Return: ", round(mean(ret() * 100, na.rm = TRUE), 5), "%")
     })
 
     output$sd <- renderText({
-      str_c("Standard Deviation: ", round(std() * 100, 3), "%")
+      stringr::str_c("Standard Deviation: ", round(std() * 100, 3), "%")
     })
   })
 }

@@ -16,6 +16,3 @@ an xts object
 Download the adjusted price of multiple tickers from yahoo and merge them
 into one xts
 }
-\examples{
-get_adjusted_prices(c('ATVI', 'TTWO'))
-}

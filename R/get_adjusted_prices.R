@@ -7,9 +7,6 @@
 #'
 #' @return an xts object
 #' @export
-#'
-#' @examples
-#'get_adjusted_prices(c('ATVI', 'TTWO'))
 get_adjusted_prices <- function(tickers) {
   quantmod::getSymbols(tickers, env = environment())
   purrr::map(tickers, ~ quantmod::Ad(get(.x, envir = environment()))) %>%
