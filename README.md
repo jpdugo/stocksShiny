@@ -18,20 +18,10 @@ other indicators.
 You can install the development version of stocksShiny like so:
 
 ``` r
-devtools::install_github('jpdugo/stocksShiny')
+renv::restore()
+rhino::app()
 ```
 
 ## Example
 
 This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(stocksShiny)
-## run the app
-stocksShiny::run_app()
-#> Loading required package: shiny
-#> 
-#> Listening on http://127.0.0.1:4737
-```
-
-<img src="man/figures/README-example-1.png" width="100%" />
