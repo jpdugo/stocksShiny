@@ -1,23 +1,22 @@
 box::use(
-  shiny,
+  shiny[...],
   shiny.semantic,
   shinyjs
 )
 
-
-#' UI for pickStock module
+#' @title pickStock
 #'
-#' Pick a stock from a selectizeInput containing s&p500 tickers
+#' @description Pick a stock from a selectizeInput containing s&p500 tickers
 #'
-#' @param id
-#'
-#' @return taglist
+#' @param id Module's id.
+#' @return a [shiny::reactive()] function containing a character vector.
 #' @export
 #'
+#' @name pickStock-module
 ui <- function(id) {
-  ns <- shiny$NS(id)
-  shiny$tagList(
-    shiny$selectizeInput(
+  ns <- NS(id)
+  tagList(
+    selectizeInput(
       inputId  = ns("tickers"),
       label    = "Select S&P500 Stocks",
       multiple = TRUE,
@@ -27,8 +26,8 @@ ui <- function(id) {
       input_id = ns("reset_rand_counter"),
       label    = "Reset Picks"
     ),
-    shiny$br(),
-    shiny$div(
+    br(),
+    div(
       shiny.semantic$checkbox_input(
         input_id  = ns("show_rand"),
         label     = "Random Pick",
@@ -36,12 +35,12 @@ ui <- function(id) {
       )
     ),
     shinyjs$hidden(
-      shiny$div(
+      div(
         id = ns("random_pick_menu"),
-        shiny$div(
+        div(
           class = "ui green button",
           id = ns("counter"),
-          "Make a Random Peak"
+          "Make a Random Pick"
         ),
         shiny.semantic$numeric_input(
           input_id = ns("n_rand_picks"),
@@ -52,7 +51,7 @@ ui <- function(id) {
         )
       )
     ),
-    shiny$div(
+    div(
       id = ns("get_data"),
       class = "ui teal button",
       "Get Data"
@@ -60,56 +59,53 @@ ui <- function(id) {
   )
 }
 
-#' Server function for pickStock module
-#'
-#' @param id
-#' @param choices \code{character} choices
-#'
-#' @return \code{reactive} character vector
-#'
-#' @import shiny
+
 #' @export
+#'
+#' @rdname tickerInfo-module
 server <- function(id, choices) {
-  shiny$moduleServer(id, function(input, output, session) {
-    shiny$observe(
+  moduleServer(id, function(input, output, session) {
+    observe(
       {
-        shiny$updateSelectizeInput(inputId = "tickers", choices = choices)
+        updateSelectizeInput(inputId = "tickers", choices = choices)
       },
       autoDestroy = TRUE
     )
 
-    shiny$observeEvent(input$show_rand,
+    observeEvent(input$show_rand,
       {
         if (input$show_rand) {
+          shinyjs$disable("tickers")
           shinyjs$show("random_pick_menu")
         } else {
+          shinyjs$enable("tickers")
           shinyjs$hide("random_pick_menu")
         }
       },
       ignoreInit = TRUE
     )
 
-    shiny$observeEvent(input$counter,
+    observeEvent(input$counter,
       {
         samp <- sample(choices, input$n_rand_picks)
-        shiny$updateSelectizeInput(session, "tickers", selected = samp)
+        updateSelectizeInput(session, "tickers", selected = samp)
       },
       ignoreInit = TRUE
     )
 
 
-    shiny$observeEvent(input$reset_rand_counter, {
-      shiny$updateSelectizeInput(session, "tickers", selected = "")
+    observeEvent(input$reset_rand_counter, {
+      updateSelectizeInput(session, "tickers", selected = "")
       shinyjs$enable("tickers")
     })
 
-    shiny$observeEvent(input$tickers, {
+    observeEvent(input$tickers, {
       if (length(input$tickers) >= 10) {
         shinyjs$disable("tickers")
       }
     })
 
-    shiny$eventReactive(input$get_data, {
+    eventReactive(input$get_data, {
       input$tickers
     })
   })

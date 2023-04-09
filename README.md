@@ -15,13 +15,9 @@ other indicators.
 
 ## Installation
 
-You can install the development version of stocksShiny like so:
+You can run this app by cloning this repo and execute:
 
 ``` r
 renv::restore()
 rhino::app()
 ```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:

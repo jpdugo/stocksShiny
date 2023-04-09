@@ -1,86 +1,119 @@
-#' UI for tickerInfo module.
+# styler: off
+box::use(
+  shiny[...],
+  shiny.semantic,
+  shinyjs,
+  lubridate,
+  plotly,
+  shinycssloaders,
+  quantmod,
+  xts,
+  app/logic/tables[xts_to_tibble, get_table_finviz, no_thead_kable],
+  app/logic/plots[candlestick_plotly],
+  app/view/ returns,
+  app/view/risk
+)
+# styler: on
+
+
+#' @title tickerInfo
 #'
-#' @param id a name for the id
+#' @description Display information about a ticker
 #'
-#' @return taglist
-#' 
-#' @importFrom magrittr %>%
-#' @import shiny
-#
+#' @param id Module's id.
 #' @export
-tickerInfoUI <- function(id) {
+#'
+#' @name tickerInfo-module
+ui <- function(id) {
+  ns <- NS(id)
   tagList(
-    shiny.semantic::tabset(
+    shiny.semantic$tabset(
       list(
         # First tab
         list(
           menu = "Overview", content =
             tagList(
               br(),
-              shiny.semantic::date_input(NS(id, "date"), "From: ",
-                min = "2001-01-01",
-                max = "2022-12-21",
-                value = "2018-12-31",
-                style = "width: 250px;"
+              shiny.semantic$date_input(
+                input_id = ns("date"),
+                label    =  "From: ",
+                min      = "2001-01-01",
+                max      = lubridate$today(),
+                value    = "2018-12-31",
+                style    = "width: 250px;"
               ),
-              shiny.semantic::selectInput(NS(id, "period"), "Periodicity",
-                choices = c("days", "weeks", "months", "quarters"),
+              shiny.semantic$selectInput(
+                inputId  = ns("period"),
+                label    =  "Periodicity",
+                choices  = c("days", "weeks", "months", "quarters"),
                 selected = "days"
               ),
-              shiny.semantic::selectInput(NS(id, "index_at"), "indexAt",
-                choices = c("firstof", "lastof", "startof", "endof"),
+              shiny.semantic$selectInput(
+                inputId  = ns("index_at"),
+                label    =  "indexAt",
+                choices  = c("firstof", "lastof", "startof", "endof"),
                 selected = "endof"
               ),
               br(),
-              plotly::plotlyOutput(NS(id, "candle")) %>% shinycssloaders::withSpinner(),
-              htmlOutput(NS(id, "finviz_table")) %>% shinycssloaders::withSpinner()
+              plotly$plotlyOutput(ns("candle")) |>
+                shinycssloaders$withSpinner(type = 8, color = "gray"),
+              htmlOutput(ns("finviz_table")) |>
+                shinycssloaders$withSpinner(type = 8, color = "gray")
             )
         ),
         # Second Tab
-        list(menu = "Returns", content = returnsUI(NS(id, "returns"))),
+        list(
+          menu    = "Returns",
+          content = returns$ui(ns("returns"))
+        ),
         # third Tab
-        list(menu = "Risk", content = riskmodUI(NS(id, "risk")))
+        list(
+          menu = "Risk",
+          content = risk$ui(ns("risk"))
+        )
       )
     )
   )
 }
 
-#' Server for tickerInfoServer
+#' @param id
+#' @param ticker
 #'
-#' @param id a name for the id
-#'
-#' @return
-#' @import shiny
 #' @export
-tickerInfoServer <- function(id) {
+#'
+#' @rdname pickStock-module
+server <- function(id, ticker) {
   moduleServer(id, function(input, output, session) {
     data <- reactive({
       req(input$date)
       req(input$index_at)
       req(input$period)
-      quantmod::getSymbols(id, auto.assign = FALSE, from = input$date)
+      quantmod$getSymbols(id, auto.assign = FALSE, from = input$date)
     })
 
-
-
     data_period <- reactive({
-      # to avoid unnecessary requests
-      xts::to.period(data(), period = input$period, indexAt = input$index_at, OHLC = FALSE)
+      # use to.period to avoid unnecessary requests from getSymbols
+      xts$to.period(
+        x       = data(),
+        period  = input$period,
+        indexAt = input$index_at,
+        OHLC    = FALSE
+      )
     })
 
     data_df <- reactive(xts_to_tibble(data_period()))
 
-    output$candle <- plotly::renderPlotly({
-      data_df() %>%
-        candlestick_plotly(id)
+    output$candle <- plotly$renderPlotly({
+      data_df() |>
+        candlestick_plotly(ticker)
     })
 
     output$finviz_table <- renderText({
-      get_table_finviz(id) %>%
+      get_table_finviz(ticker) |>
         no_thead_kable()
     })
 
-    returnsServer("returns", data_period)
-    riskmodServer("risk", data_period)
+    returns$server("returns", data_period)
+    risk$server("risk", data_period)
   })
 }
