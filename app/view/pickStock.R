@@ -93,7 +93,6 @@ server <- function(id, choices) {
       ignoreInit = TRUE
     )
 
-
     observeEvent(input$reset_rand_counter, {
       updateSelectizeInput(session, "tickers", selected = "")
       shinyjs$enable("tickers")
