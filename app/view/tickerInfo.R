@@ -39,7 +39,7 @@ ui <- function(id) {
                 label    =  "From: ",
                 min      = "2001-01-01",
                 max      = lubridate$today(),
-                value    = "2018-12-31",
+                value    = lubridate$make_date(lubridate$year(lubridate$today()), 1, 1),
                 style    = "width: 250px;"
               ),
               shiny.semantic$selectInput(
