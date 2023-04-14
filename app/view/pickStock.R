@@ -62,7 +62,7 @@ ui <- function(id) {
 }
 
 
-#' @param id 
+#' @param id
 #' @param choices \code{character}
 #' @param selection \code{reactiveValues}
 #' @param stock_limit \code{integer}
@@ -112,14 +112,13 @@ server <- function(id, choices, selection, stock_limit) {
     })
 
     observeEvent(input$get_data, {
-      
       purrr$walk(
         .x = seq_along(stock_limit),
         .f = \(x) {
           selection[[glue("ticker_{x}")]] <- NULL
         }
       )
-      
+
       purrr$walk(
         .x = seq_along(input$tickers),
         .f = \(x) {
