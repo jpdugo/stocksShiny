@@ -88,7 +88,7 @@ server <- function(id, ticker) {
       req(input$date)
       req(input$index_at)
       req(input$period)
-      quantmod$getSymbols(id, auto.assign = FALSE, from = input$date)
+      quantmod$getSymbols(ticker(), auto.assign = FALSE, from = input$date)
     })
 
     data_period <- reactive({
@@ -105,11 +105,11 @@ server <- function(id, ticker) {
 
     output$candle <- plotly$renderPlotly({
       data_df() |>
-        candlestick_plotly(ticker)
+        candlestick_plotly(ticker())
     })
 
     output$finviz_table <- renderText({
-      get_table_finviz(ticker) |>
+      get_table_finviz(ticker()) |>
         no_thead_kable()
     })
 
