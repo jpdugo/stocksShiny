@@ -34,9 +34,12 @@ server <- function(id) {
 
     tickers_selected <- reactiveValues()
 
-    for (i in 1:stock_limit) {
-      tickers_selected[[glue("ticker_{i}")]] <- NULL
-    }
+    purrr$walk(
+      .x = 1:stock_limit,
+      .f = \(x) {
+        tickers_selected[[glue("ticker_{x}")]] <- NULL
+      }
+    )
 
     pickStock$server(
       id          = "picker",
