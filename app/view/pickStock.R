@@ -119,12 +119,16 @@ server <- function(id, choices, selection, stock_limit) {
         }
       )
 
-      purrr$walk(
-        .x = seq_along(input$tickers),
-        .f = \(x) {
-          selection[[glue("ticker_{x}")]] <- input$tickers[[x]]
-        }
-      )
+      if (length(input$tickers)) {
+        purrr$walk(
+          .x = seq_along(input$tickers),
+          .f = \(x) {
+            selection[[glue("ticker_{x}")]] <- input$tickers[[x]]
+          }
+        )
+      } else {
+        return()
+      }
     })
   })
 }

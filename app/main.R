@@ -5,10 +5,11 @@ box::use(
   purrr,
   glue[glue],
   app / view / pickStock,
-  app / view / tickerInfo
+  app / view / tickerInfo,
+  readr
 )
 
-load("./app/logic/sp500nms.rda")
+sp500nms <- readr$read_rds("app/logic/sp500nms.rds")
 
 stock_limit <- 10
 
@@ -43,6 +44,7 @@ server <- function(id) {
     )
 
     observeEvent(tickers_selected |> reactiveValuesToList(), {
+      # todo: this observeEvent is not really needed
       tickers_selected |>
         reactiveValuesToList() |>
         purrr$keep(\(x) !is.null(x)) |>
