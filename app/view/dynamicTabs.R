@@ -1,6 +1,8 @@
 box::use(
   shiny[...],
-  purrr
+  purrr,
+  shiny.semantic,
+  app / view / tickerInfo,
 )
 
 #' @export
@@ -12,27 +14,32 @@ ui <- function(id) {
 }
 
 #' @export
-server <- function(id, nms) {
+server <- function(id, tickers_selected) {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
-      
-      spliced_nms <- reactiveValues()
-      
-      observeEvent(nms(), {
-        purrr$walk(
-          nms(),
-          \(x) {
-            spliced_nms[[x]] <- x
-          }
+
+      observeEvent(tickers_selected |> reactiveValuesToList(), {
+        tickers_selected |>
+          reactiveValuesToList() |>
+          purrr$keep(\(x) !is.null(x)) |>
+          purrr$map(\(x) tickerInfo$server(x, reactive(x)))
+      })
+
+      output$tabs <- renderUI({
+        shiny.semantic$tabset(
+          tabs = tickers_selected |>
+            reactiveValuesToList() |>
+            purrr$keep(\(x) !is.null(x)) |>
+            purrr$map(
+              \(x) list(
+                menu = x,
+                content = tickerInfo$ui(ns(x))
+              )
+            )
         )
       })
-      
-
-      output$tabs <- renderUI(
-        spliced_nms |> reactiveValuesToList()
-      )
     }
   )
 }

@@ -65,8 +65,7 @@ ui <- function(id) {
 #'
 #' @export
 #'
-#' @rdname tickerInfo-module
-server <- function(id, choices) {
+#' @rdname pickStock-module
 server <- function(id, choices, selection, stock_limit) {
   moduleServer(id, function(input, output, session) {
     observe(

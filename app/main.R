@@ -5,12 +5,13 @@ box::use(
   purrr,
   glue[glue],
   app / view / pickStock,
-  app / view / tickerInfo,
   app / view / dynamicTabs,
   readr
 )
 
 sp500nms <- readr$read_rds("app/logic/sp500nms.rds")
+
+stock_limit <- 10
 
 #' @export
 ui <- function(id) {
@@ -31,13 +32,22 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
-
-    selection <- pickStock$server(id = "picker", choices = sp500nms)
+    tickers_selected <- reactiveValues()
+    
+    for (i in 1:stock_limit) {
+      tickers_selected[[glue("ticker_{i}")]] <- NULL
+    }
+    
+    pickStock$server(
+      id          = "picker",
+      choices     = sp500nms,
+      selection   = tickers_selected,
+      stock_limit = stock_limit
+    )
     
     dynamicTabs$server(
-      "dynamic_tabs",
-      nms = selection
+      id = "dynamic_tabs",
+      tickers_selected = tickers_selected
     )
   })
 }
