@@ -85,10 +85,12 @@ ui <- function(id) {
 server <- function(id, ticker) {
   moduleServer(id, function(input, output, session) {
     data <- reactive({
-      req(input$date)
-      req(input$index_at)
-      req(input$period)
-      quantmod$getSymbols(ticker(), auto.assign = FALSE, from = input$date)
+      req(input$date, input$index_at, input$period)
+      quantmod$getSymbols(
+        Symbols     = ticker(),
+        auto.assign = FALSE,
+        from        = input$date
+      )
     })
 
     data_period <- reactive({
@@ -109,7 +111,8 @@ server <- function(id, ticker) {
     })
 
     output$finviz_table <- renderText({
-      get_table_finviz(ticker()) |>
+      ticker() |>
+        get_table_finviz() |>
         no_thead_kable()
     })
 

@@ -21,10 +21,11 @@ server <- function(id, tickers_selected) {
       ns <- session$ns
 
       observeEvent(tickers_selected |> reactiveValuesToList(), {
+        # observeEvent not strictly needed ( ? )
         tickers_selected |>
           reactiveValuesToList() |>
           purrr$keep(\(x) !is.null(x)) |>
-          purrr$map(\(x) tickerInfo$server(x, reactive(x)))
+          purrr$walk(\(x) tickerInfo$server(x, reactive(x)))
       })
 
       output$tabs <- renderUI({

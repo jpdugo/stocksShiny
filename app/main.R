@@ -11,8 +11,6 @@ box::use(
 
 sp500nms <- readr$read_rds("app/logic/sp500nms.rds")
 
-stock_limit <- 10
-
 #' @export
 ui <- function(id) {
   ns <- NS(id)
@@ -32,6 +30,8 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    stock_limit <- 10 # this will eventually be a reactive
+
     tickers_selected <- reactiveValues()
 
     for (i in 1:stock_limit) {

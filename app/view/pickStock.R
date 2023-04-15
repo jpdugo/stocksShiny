@@ -33,26 +33,21 @@ ui <- function(id) {
       )
     ),
     br(),
-    div(
-      shiny.semantic$flow_layout(
-        id = ns("random_pick_menu"),
-        div(
-          class = "ui green button",
-          id = ns("counter"),
-          "Make a Random Pick"
-        ),
-        shiny.semantic$numeric_input(
-          input_id = ns("n_rand_picks"),
-          label    = "N' of Picks",
-          value    = 1,
-          min      = 1,
-          max      = 10
-        )
+    shiny.semantic$flow_layout(
+      div(
+        class = "ui green button",
+        id = ns("counter"),
+        "Make a Random Pick"
       ),
-      shiny.semantic$action_button(
-        input_id = ns("reset_rand_counter"),
-        label    = "Reset Picks"
+      shiny.semantic$numeric_input(
+        input_id = ns("n_rand_picks"),
+        label    = "N' of Picks",
+        value    = 1
       )
+    ),
+    shiny.semantic$action_button(
+      input_id = ns("reset_rand_counter"),
+      label    = "Reset Picks"
     )
   )
 }
@@ -70,31 +65,26 @@ server <- function(id, choices, selection, stock_limit) {
   moduleServer(id, function(input, output, session) {
     observe(
       {
-        updateSelectizeInput(inputId = "tickers", choices = choices)
+        updateSelectizeInput(
+          inputId = "tickers",
+          choices = choices
+        )
+        shiny.semantic$update_numeric_input(
+          session  = session,
+          input_id = "n_rand_picks",
+          label    = "N' of Picks",
+          value    = 3,
+          min      = 1,
+          max      = stock_limit
+        )
       },
       autoDestroy = TRUE
     )
 
-    observeEvent(input$show_rand,
-      {
-        if (input$show_rand) {
-          shinyjs$disable("tickers")
-          shinyjs$show("random_pick_menu")
-        } else {
-          shinyjs$enable("tickers")
-          shinyjs$hide("random_pick_menu")
-        }
-      },
-      ignoreInit = TRUE
-    )
-
-    observeEvent(input$counter,
-      {
-        samp <- sample(choices, input$n_rand_picks)
-        updateSelectizeInput(session, "tickers", selected = samp)
-      },
-      ignoreInit = TRUE
-    )
+    observeEvent(input$counter, {
+      samp <- sample(choices, input$n_rand_picks)
+      updateSelectizeInput(session, "tickers", selected = samp)
+    })
 
     observeEvent(input$reset_rand_counter, {
       updateSelectizeInput(session, "tickers", selected = "")
@@ -102,7 +92,7 @@ server <- function(id, choices, selection, stock_limit) {
     })
 
     observeEvent(input$tickers, {
-      if (length(input$tickers) >= 10) {
+      if (length(input$tickers) >= stock_limit) {
         shinyjs$disable("tickers")
       }
     })
