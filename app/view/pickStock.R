@@ -113,11 +113,13 @@ server <- function(id, choices, selection, stock_limit) {
 
     observeEvent(input$get_data, {
       purrr$walk(
-        .x = seq_along(stock_limit),
+        .x = 1:stock_limit,
         .f = \(x) {
           selection[[glue("ticker_{x}")]] <- NULL
         }
       )
+
+      req(input$tickers)
 
       purrr$walk(
         .x = seq_along(input$tickers),
