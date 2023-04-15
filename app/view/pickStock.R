@@ -18,26 +18,23 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
   tagList(
-    selectizeInput(
-      inputId  = ns("tickers"),
-      label    = "Select S&P500 Stocks",
-      multiple = TRUE,
-      choices  = ""
-    ),
-    shiny.semantic$action_button(
-      input_id = ns("reset_rand_counter"),
-      label    = "Reset Picks"
+    shiny.semantic$flow_layout(
+      selectizeInput(
+        inputId  = ns("tickers"),
+        label    = "Select S&P500 Stocks",
+        multiple = TRUE,
+        choices  = ""
+      ),
+      div(
+        id = ns("get_data"),
+        class = "ui teal button",
+        "Get Data",
+        style = "margin-top: 16px;width: 100%" # bad practice
+      )
     ),
     br(),
     div(
-      shiny.semantic$checkbox_input(
-        input_id  = ns("show_rand"),
-        label     = "Random Pick",
-        is_marked = FALSE
-      )
-    ),
-    shinyjs$hidden(
-      div(
+      shiny.semantic$flow_layout(
         id = ns("random_pick_menu"),
         div(
           class = "ui green button",
@@ -51,12 +48,11 @@ ui <- function(id) {
           min      = 1,
           max      = 10
         )
+      ),
+      shiny.semantic$action_button(
+        input_id = ns("reset_rand_counter"),
+        label    = "Reset Picks"
       )
-    ),
-    div(
-      id = ns("get_data"),
-      class = "ui teal button",
-      "Get Data"
     )
   )
 }
@@ -69,7 +65,7 @@ ui <- function(id) {
 #'
 #' @export
 #'
-#' @rdname tickerInfo-module
+#' @rdname pickStock-module
 server <- function(id, choices, selection, stock_limit) {
   moduleServer(id, function(input, output, session) {
     observe(

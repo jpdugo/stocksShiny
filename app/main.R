@@ -1,14 +1,15 @@
 box::use(
   shiny[...],
   shiny.semantic,
-  shinyjs[useShinyjs],
+  shinyjs,
   purrr,
   glue[glue],
   app / view / pickStock,
-  app / view / tickerInfo
+  app / view / dynamicTabs,
+  readr
 )
 
-load("./app/logic/sp500nms.rda")
+sp500nms <- readr$read_rds("app/logic/sp500nms.rds")
 
 stock_limit <- 10
 
@@ -16,10 +17,14 @@ stock_limit <- 10
 ui <- function(id) {
   ns <- NS(id)
   shiny.semantic$semanticPage(
-    useShinyjs(),
+    shinyjs$useShinyjs(),
     shiny.semantic$sidebar_layout(
-      shiny.semantic$sidebar_panel(pickStock$ui(ns("picker"))),
-      shiny.semantic$main_panel(uiOutput(ns("stock_tabs")))
+      shiny.semantic$sidebar_panel(
+        pickStock$ui(ns("picker"))
+      ),
+      shiny.semantic$main_panel(
+        dynamicTabs$ui(ns("dynamic_tabs"))
+      )
     )
   )
 }
@@ -27,8 +32,6 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
-
     tickers_selected <- reactiveValues()
 
     for (i in 1:stock_limit) {
@@ -42,25 +45,9 @@ server <- function(id) {
       stock_limit = stock_limit
     )
 
-    observeEvent(tickers_selected |> reactiveValuesToList(), {
-      tickers_selected |>
-        reactiveValuesToList() |>
-        purrr$keep(\(x) !is.null(x)) |>
-        purrr$map(\(x) tickerInfo$server(x, reactive(x)))
-    })
-
-    output$stock_tabs <- renderUI({
-      shiny.semantic$tabset(
-        tabs = tickers_selected |>
-          reactiveValuesToList() |>
-          purrr$keep(\(x) !is.null(x)) |>
-          purrr$map(
-            \(x) list(
-              menu = x,
-              content = tickerInfo$ui(ns(x))
-            )
-          )
-      )
-    })
+    dynamicTabs$server(
+      id = "dynamic_tabs",
+      tickers_selected = tickers_selected
+    )
   })
 }
