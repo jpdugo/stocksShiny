@@ -31,7 +31,7 @@ candlestick_plotly <- function(ochl_df, id) {
     high  = as.formula(stringr$str_c("~", id, ".High")),
     low   = as.formula(stringr$str_c("~", id, ".Low"))
   )
-  
+
   fig |> plotly$layout(
     title = id,
     xaxis = list(title = NA)

@@ -33,18 +33,18 @@ ui <- function(id) {
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
     tickers_selected <- reactiveValues()
-    
+
     for (i in 1:stock_limit) {
       tickers_selected[[glue("ticker_{i}")]] <- NULL
     }
-    
+
     pickStock$server(
       id          = "picker",
       choices     = sp500nms,
       selection   = tickers_selected,
       stock_limit = stock_limit
     )
-    
+
     dynamicTabs$server(
       id = "dynamic_tabs",
       tickers_selected = tickers_selected
