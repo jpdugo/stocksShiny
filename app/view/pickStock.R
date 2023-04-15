@@ -60,11 +60,14 @@ ui <- function(id) {
 
 #' @param id
 #' @param choices \code{character}
+#' @param selection \code{reactiveValues}
+#' @param stock_limit \code{integer}
 #'
 #' @export
 #'
 #' @rdname tickerInfo-module
 server <- function(id, choices) {
+server <- function(id, choices, selection, stock_limit) {
   moduleServer(id, function(input, output, session) {
     observe(
       {
@@ -105,8 +108,22 @@ server <- function(id, choices) {
       }
     })
 
-    eventReactive(input$get_data, {
-      input$tickers
+    observeEvent(input$get_data, {
+      purrr$walk(
+        .x = 1:stock_limit,
+        .f = \(x) {
+          selection[[glue("ticker_{x}")]] <- NULL
+        }
+      )
+
+      req(input$tickers)
+
+      purrr$walk(
+        .x = seq_along(input$tickers),
+        .f = \(x) {
+          selection[[glue("ticker_{x}")]] <- input$tickers[[x]]
+        }
+      )
     })
   })
 }
