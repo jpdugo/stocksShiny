@@ -23,7 +23,8 @@ ui <- function(id) {
         inputId  = ns("tickers"),
         label    = "Select S&P500 Stocks",
         multiple = TRUE,
-        choices  = ""
+        choices  = "",
+        options = list(placeholder = "Select an ticker...")
       ),
       div(
         id = ns("get_data"),
@@ -42,7 +43,7 @@ ui <- function(id) {
       shiny.semantic$numeric_input(
         input_id = ns("n_rand_picks"),
         label    = "N' of Picks",
-        value    = 1
+        value    = 3
       )
     ),
     shiny.semantic$action_button(
