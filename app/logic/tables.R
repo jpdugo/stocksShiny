@@ -1,10 +1,13 @@
 box::use(
+  dplyr[...],
   zoo,
   purrr,
   tibble,
   stringr,
   rvest,
-  kableExtra
+  kableExtra,
+  BatchGetSymbols,
+  readr
 )
 
 #' Convert an xts object to a tibble
@@ -107,4 +110,29 @@ get_adjusted_prices <- function(tickers) {
   quantmod$getSymbols(tickers, env = environment())
   purrr$map(tickers, \(x) quantmod$Ad(get(x, envir = environment()))) |>
     purrr$reduce(merge)
+}
+
+#' @export
+get_tickers_cleaned <- function() {
+  BatchGetSymbols$GetSP500Stocks() |>
+    mutate(
+      Tickers = stringr$str_replace(Tickers, pattern = "\\.", "-")
+    )
+}
+
+
+# get s&p tickers -----------------------------------------------------------------------------
+
+#' @export
+create_ticker_choices <- function() {
+  get_tickers_cleaned() |>
+    select(Tickers, Company) |>
+    (\(x) {
+      purrr$set_names(pull(x, Tickers), pull(x, Company))
+    })()
+}
+
+#' @export
+save_ticker_choices <- function() {
+  create_ticker_choices() |> readr$write_rds("app/logic/sp500nms.rds")
 }
