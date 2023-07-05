@@ -65,7 +65,7 @@ get_table_finviz <- function(ticker) {
   link <- stringr$str_c("https://finviz.com/quote.ashx?t=", ticker)
   url <- rvest$read_html(link)
   tbls <- url |> rvest$html_table()
-  tbls[[9]]
+  tbls[[10]]
 }
 
 
